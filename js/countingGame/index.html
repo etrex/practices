@@ -73,10 +73,7 @@
       operator = randomOperator()
 
       if(operator == '/'){
-        n1 -= n1%n2
-        if(n1 < min){
-          n1 += n2
-        }
+        n1 = n1*n2
       }
 
       answer = eval(`${n1}${operator}${n2}`)
@@ -135,6 +132,7 @@
       p1Dom.classList.add('hidden')
       p2Dom.classList.add('hidden')
       p3Dom.classList.remove('hidden')
+      inputDom.innerHTML = ''
       clearInterval(timerInterval)
     }
 
