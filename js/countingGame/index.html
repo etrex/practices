@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>60 Seconds Challenge</title>
+  <style>
+    .hidden{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="p1">
+    <h1>60 Seconds Challenge</h1>
+    <button class="start-game">start game</button>
+  </div>
+  <div id="p2">
+    <div>
+      time: <span class="timer">60</span>
+    </div>
+    
+    <div>
+      score: <span class="score">0</span>
+    </div>
+    
+    <span id="question">a+b=</span><input type="text" id="input"/>
+  </div>
+  <div id="p3">
+    your score is <span class="score">0</span>.
+    <button class="start-game">restart game</button>
+  </div>
+  <script>
+    const scoresDom = document.querySelectorAll('.score')
+    const questionDom = document.getElementById('question')
+
+    const timerDom = document.querySelector('.timer')
+
+    // question
+    let n1
+    let operator
+    let n2
+    let min
+    let max
+    let answer
+    let questionScore
+    
+    // score
+    let score 
+
+    // timer
+    let timer
+    let timerInterval
+
+    // game
+    const p1Dom = document.getElementById('p1')
+    const p2Dom = document.getElementById('p2')
+    const p3Dom = document.getElementById('p3')
+    let startGameButtonsDom = document.querySelectorAll('.start-game')
+    
+    // question
+    function random(min, max){
+      return Math.floor(Math.random()*(max-min+1)+min)
+    }
+
+    function randomOperator(){
+      return ["+","-","*","/"][random(0,3)]
+    }
+
+    function generateQuestion(){
+      n1 = random(min, max)
+      n2 = random(min, max)
+      operator = randomOperator()
+
+      if(operator == '/'){
+        n1 -= n1%n2
+        if(n1 < min){
+          n1 += n2
+        }
+      }
+
+      answer = eval(`${n1}${operator}${n2}`)
+    }
+
+    function updateQuestion(){
+      questionDom.innerHTML = `${n1}${operator}${n2}=`
+    }
+
+    // score
+    function updateScore(){
+      scoresDom.forEach(s => s.innerHTML = score)
+    }
+
+    // timer
+    function updateTimer(){
+      if(timer >= 40){
+        [min, max] = [1, 9]
+        questionScore = 1
+      }else if(timer >= 20){
+        [min, max] = [10, 99]
+        questionScore = 1
+      }else if(timer >= 0){
+        [min, max] = [100, 999]
+        questionScore = 5
+      }else{
+        gameStop()
+      }
+      timerDom.innerHTML = timer
+    }
+
+    // process
+    function cowndown(){
+      timer --
+      updateTimer()
+    }
+
+    // game
+    function gameStart(){
+      p1Dom.classList.add('hidden')
+      p2Dom.classList.remove('hidden')
+      p3Dom.classList.add('hidden')
+
+      timer = 60
+      updateTimer()
+      timerInterval = setInterval(cowndown, 1000)
+
+      score = 0
+      updateScore()
+
+      generateQuestion()
+      updateQuestion()
+    }
+
+    function gameStop(){
+      p1Dom.classList.add('hidden')
+      p2Dom.classList.add('hidden')
+      p3Dom.classList.remove('hidden')
+      clearInterval(timerInterval)
+    }
+
+    startGameButtonsDom.forEach(button=>{
+      button.addEventListener('click', function(e){
+        e.preventDefault()
+        gameStart()
+      })
+    })
+    
+
+    // interactive
+    const inputDom = document.getElementById('input')
+    
+    function checkAnswer(){
+      if(Number(inputDom.value) === answer){
+        score += questionScore
+      }else{
+        score -= 1
+      }
+      updateScore()
+      inputDom.value = ''
+    }
+
+    inputDom.addEventListener('keyup', function(e){
+      if(e.keyCode === 13){
+        checkAnswer()
+        generateQuestion()
+        updateQuestion()
+      }
+    })   
+    
+    p2Dom.classList.add('hidden')
+    p3Dom.classList.add('hidden')
+  </script>
+</body>
+</html>
